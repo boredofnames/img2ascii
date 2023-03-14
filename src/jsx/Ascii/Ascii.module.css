@@ -23,6 +23,8 @@
 }
 
 .Option {
+  display: flex;
+  align-items: center;
   padding-left: 6px;
   padding-bottom: 4px;
 }
