@@ -199,8 +199,8 @@ export function AsciiProvider(props) {
       setState,
       setSize() {
         setState({
-          width: Math.floor((refs.preview.width / state.scale) * 1.65),
-          height: Math.floor(refs.preview.height / state.scale),
+          width: Math.floor((state.imageWidth / state.scale) * 1.6),
+          height: Math.floor(state.imageHeight / state.scale),
         });
       },
     },

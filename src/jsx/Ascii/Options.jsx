@@ -141,10 +141,18 @@ export default function Options() {
         reader = new FileReader();
       // it's onload event and you forgot (parameters)
       reader.onload = function (e) {
-        setState("image", e.target.result);
+        const image = new Image();
+        image.src = e.target.result;
+        image.onload = () => {
+          setState({
+            image: e.target.result,
+            imageWidth: image.width,
+            imageHeight: image.height,
+          });
+          resolve(1);
+        };
         refs.uploader.files = new DataTransfer().files;
         refs.uploader.value = "";
-        resolve(1);
       };
       reader.onerror = () => reject(new Error("Failed to load image!"));
       reader.readAsDataURL(file);
