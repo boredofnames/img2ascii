@@ -25,8 +25,20 @@ export function About(props) {
           </span>
           <div class={styles.content}>
             img2ascii by Anthony Kolak
-            <a href="https://github.com/boredofnames/img2ascii">Source Code</a>
-            <a href="https://www.paypal.com/paypalme/4z3r0d3v">Donate</a>
+            <a
+              href="https://github.com/boredofnames/img2ascii"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Source Code
+            </a>
+            <a
+              href="https://www.paypal.com/paypalme/4z3r0d3v"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Donate
+            </a>
           </div>
         </div>
       </Show>
