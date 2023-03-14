@@ -1,0 +1,10 @@
+.Sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  min-width: 253px;
+  max-width: 253px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: rgb(12, 12, 24);
+}

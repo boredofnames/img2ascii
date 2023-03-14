@@ -1,0 +1,24 @@
+{
+  "name": "img2ascii",
+  "version": "0.1.0",
+  "description": "ascii generator",
+  "author": "Anthony Kolak <kilospade+dev@gmail.com> (https://ehmeh.com)",
+  "funding": "https://www.paypal.com/paypalme/4z3r0d3v",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^4.1.1",
+    "vite-plugin-solid": "^2.5.0"
+  },
+  "dependencies": {
+    "chroma-js": "^2.4.2",
+    "dom-to-image": "^2.6.0",
+    "rgbquant": "^1.1.2",
+    "solid-js": "^1.6.10"
+  }
+}

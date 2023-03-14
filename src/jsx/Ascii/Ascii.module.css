@@ -1,0 +1,28 @@
+.Ascii {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  overflow: auto;
+}
+
+.preview {
+  height: fit-content;
+}
+
+.output {
+  white-space: pre;
+  font-family: FiraCode, monospace;
+  line-height: 1;
+  height: fit-content;
+}
+
+.Option {
+  padding-left: 6px;
+  padding-bottom: 4px;
+}
