@@ -38,7 +38,7 @@ export function orderDensity(str) {
     [
       ...new Set(
         str
-          .replace(/^/, " .:")
+          .replace(/^/, ".:")
           .replace(/(?<!^)\s/g, "")
           .split("")
       ),
