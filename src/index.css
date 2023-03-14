@@ -25,7 +25,7 @@ code {
 
 @font-face {
   font-family: FiraCode;
-  src: url("src/assets/fonts/ttf/Fira\ Code\ Regular\ Nerd\ Font\ Complete\ Mono.ttf");
+  src: url("@/assets/fonts/ttf/Fira\ Code\ Regular\ Nerd\ Font\ Complete\ Mono.ttf");
 }
 
 ::-webkit-scrollbar {
