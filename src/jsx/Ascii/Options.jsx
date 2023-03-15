@@ -135,6 +135,10 @@ export default function Options() {
     }
   }
 
+  function onCopy() {
+    navigator.clipboard.writeText(refs.output.innerText);
+  }
+
   async function readFile() {
     return new Promise((resolve, reject) => {
       let file = refs.uploader.files[0],
@@ -322,6 +326,9 @@ export default function Options() {
         <Option>
           <button onClick={() => onSave("jpeg")}>JPEG</button>
           <button onClick={() => onSave("png")}>PNG</button>
+        </Option>
+        <Option>
+          <button onClick={onCopy}>Copy to clipboard</button>
         </Option>
       </Section>
       {/* <p style={"white-space: pre-wrap; text-align: left"}>
