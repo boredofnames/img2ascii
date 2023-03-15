@@ -13,7 +13,7 @@ export default function Ascii() {
   const [portaled, setPortaled] = createSignal(false);
   const [mounted, setMounted] = createSignal(false);
 
-  let buffer, lastColorCode;
+  let buffer, lastColor, lastColorCode;
 
   function quantize(canvas) {
     let ctx = canvas.getContext("2d");
@@ -96,25 +96,35 @@ export default function Ascii() {
     }
   }
 
+  function getColoredOutput(color, char) {
+    let prefix = "",
+      colorString = getColorString(color);
+    if (lastColor !== colorString) {
+      prefix = `${
+        lastColor === undefined ? "" : "</span>"
+      }<span style="color: ${colorString}">`;
+      lastColor = colorString;
+    }
+    let output =
+      state.useTermCodes === true
+        ? state.termCodes === "fastfetch"
+          ? char === "$"
+            ? getColorCode(color) + "$$"
+            : getColorCode(color) + char
+          : getColorCode(color) + char
+        : char;
+    return prefix + output;
+  }
+
   function drawAsciiText(buffer) {
     let text = "";
-    lastColorCode = undefined;
+    lastColor = lastColorCode = undefined;
     for (let y = 0, len = buffer.length; y < len; y++) {
       for (let x = 0, len = buffer[y].length; x < len; x++) {
         let char = buffer[y][x][0],
           color = buffer[y][x][1];
 
-        text += state.useColors
-          ? `<span style="color: ${getColorString(color)}">${
-              state.useTermCodes === true
-                ? state.termCodes === "fastfetch"
-                  ? char === "$"
-                    ? getColorCode(color) + "$$"
-                    : getColorCode(color) + char
-                  : getColorCode(color) + char
-                : char
-            }</span>`
-          : char;
+        text += state.useColors ? getColoredOutput(color, char) : char;
       }
       text += "\n";
     }
