@@ -1,4 +1,4 @@
-import { useAscii, refs, charSets, palettes } from "./context";
+import { useAscii, refs, charSets, palettes, termCodes } from "./context";
 import { orderDensity } from "../../js/lib/surface-area";
 import chroma from "chroma-js";
 import { For, Show } from "solid-js";
@@ -43,7 +43,7 @@ export default function Options() {
   function onUseColors(e) {
     setState({
       useColors: e.currentTarget.checked,
-      termCodes: e.currentTarget.checked === false && false,
+      useTermCodes: e.currentTarget.checked === false && false,
     });
   }
 
@@ -74,8 +74,12 @@ export default function Options() {
     setState("palette", value === "undefined" ? undefined : value);
   }
 
+  function onUseTermCodes(e) {
+    setState("useTermCodes", e.currentTarget.checked);
+  }
+
   function onTermCodes(e) {
-    setState("termCodes", e.currentTarget.checked);
+    setState("termCodes", e.currentTarget.value);
   }
 
   function onShowPreviews(e) {
@@ -263,8 +267,21 @@ export default function Options() {
             </Show>
           </Option>
           <Option title="Embed Term Codes">
-            <input type="checkbox" onChange={onTermCodes} />
+            <input
+              checked={state.useTermCodes}
+              type="checkbox"
+              onChange={onUseTermCodes}
+            />
           </Option>
+          <Show when={state.useTermCodes}>
+            <Option>
+              <select onChange={onTermCodes} value={state.termCodes}>
+                <For each={termCodes}>
+                  {(set) => <option value={set}>{set}</option>}
+                </For>
+              </select>
+            </Option>
+          </Show>
           <Section
             title="Quantization"
             option={

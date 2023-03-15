@@ -73,14 +73,27 @@ export default function Ascii() {
   }
 
   function getColor(r, g, b, a) {
-    return a === 0 ? "rgb(0,0,0)" : `rgb(${r},${g},${b})`;
+    return a === 0 ? [0, 0, 0] : [r, g, b];
+  }
+
+  function getColorString(color) {
+    let [r, g, b] = color;
+    return `rgb(${r},${g},${b})`;
   }
 
   function getColorCode(color) {
-    let index = state.colors.indexOf(color) + 1;
-    if (index === lastColorCode) return "";
-    lastColorCode = index;
-    return "$" + index;
+    if (state.termCodes === "fastfetch") {
+      let index = state.colors.indexOf(getColorString(color)) + 1;
+      if (index === lastColorCode) return "";
+      lastColorCode = index;
+      return "$" + index;
+    } else if (state.termCodes === "ansi") {
+      let [r, g, b] = color;
+      let code = `\\033[38;2;${r};${g};${b}m`;
+      if (code === lastColorCode) return "";
+      lastColorCode = code;
+      return code;
+    }
   }
 
   function drawAsciiText(buffer) {
@@ -92,10 +105,12 @@ export default function Ascii() {
           color = buffer[y][x][1];
 
         text += state.useColors
-          ? `<span style="color: ${color}">${
-              state.termCodes === true
-                ? char === "$"
-                  ? getColorCode(color) + "$$"
+          ? `<span style="color: ${getColorString(color)}">${
+              state.useTermCodes === true
+                ? state.termCodes === "fastfetch"
+                  ? char === "$"
+                    ? getColorCode(color) + "$$"
+                    : getColorCode(color) + char
                   : getColorCode(color) + char
                 : char
             }</span>`
@@ -141,7 +156,7 @@ export default function Ascii() {
       const y = Math.floor(i / 4 / state.width);
 
       const color = getColor(r, g, b, a);
-      colors.add(color);
+      colors.add(getColorString(color));
 
       buffer[y] = buffer[y] || [];
       buffer[y][x] = [c, color];
@@ -201,6 +216,7 @@ export default function Ascii() {
     on(
       () => {
         state.useColors;
+        state.useTermCodes;
         state.termCodes;
       },
       () => {

@@ -21,8 +21,10 @@ export const charSets = [
   "custom-from",
 ];
 
+export const termCodes = ["ansi", "fastfetch"];
+
 export let palettes = {
-  terminal: [
+  "3-bit-term": [
     [0, 0, 0],
     [194, 54, 33],
     [37, 188, 36],
@@ -166,7 +168,8 @@ export const AsciiContext = createContext([
     colors: [],
     colorDepth: 8,
     palette: undefined,
-    termCodes: false,
+    useTermCodes: false,
+    termCodes: "ansi",
     chromaRange: 10,
     useQuant: false,
     useDither: false,
@@ -188,7 +191,8 @@ export function AsciiProvider(props) {
     colors: props.colors || [],
     colorDepth: props.colorDepth || 8,
     palette: props.palette || undefined,
-    termCodes: props.termCodes || false,
+    useTermCodes: props.useTermCodes || false,
+    termCodes: props.termCodes || "ansi",
     chromaRange: props.chromaRange || 10,
     useQuant: props.useQuant || false,
     useDither: props.useDither || false,
