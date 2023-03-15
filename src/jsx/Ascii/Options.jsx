@@ -318,22 +318,22 @@ export default function Options() {
               </Option>
             </Show>
           </Section>
-          <Section title="Chroma Key">
-            <Option title="Color">
-              <input type="color" value={state.chromaKey} onInput={onChroma} />
-            </Option>
-            <Option title="Range">
-              <input
-                type="range"
-                min="1"
-                max="40"
-                value={state.chromaRange}
-                onInput={(e) => setState("chromaRange", +e.target.value)}
-              />{" "}
-              {state.chromaRange}
-            </Option>
-          </Section>
         </Show>
+      </Section>
+      <Section title="Chroma Key">
+        <Option title="Color">
+          <input type="color" value={state.chromaKey} onInput={onChroma} />
+        </Option>
+        <Option title="Range">
+          <input
+            type="range"
+            min="1"
+            max="40"
+            value={state.chromaRange}
+            onInput={(e) => setState("chromaRange", +e.target.value)}
+          />{" "}
+          {state.chromaRange}
+        </Option>
       </Section>
       <Section title="Save">
         <Option>
