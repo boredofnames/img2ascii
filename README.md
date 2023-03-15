@@ -1,6 +1,6 @@
 ## About
 
-WIP Ascii generator made with [SolidJS](https://solidjs.com/) and bundled with [Vite](https://vitejs.dev/). Includes quantization via [RgbQuant.js](https://github.com/leeoniya/RgbQuant.js/), color utils with [chroma.js](https://github.com/gka/chroma.js/), and image saving with [dom-to-image](https://github.com/tsayen/dom-to-image).
+WIP Ascii generator made with [SolidJS](https://solidjs.com/) and bundled with [Vite](https://vitejs.dev/). Includes quantization via [RgbQuant.js](https://github.com/leeoniya/RgbQuant.js/), color utils with [chroma.js](https://github.com/gka/chroma.js/), and image saving with [html-to-image](https://github.com/bubkoo/html-to-image).
 
 ## Demo
 

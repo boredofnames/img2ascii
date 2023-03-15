@@ -3,8 +3,7 @@ import { orderDensity } from "../../js/lib/surface-area";
 import chroma from "chroma-js";
 import { For, Show } from "solid-js";
 import styles from "./Ascii.module.css";
-import domtoimage from "dom-to-image";
-import { style } from "solid-js/web";
+import { toPng, toJpeg } from "html-to-image";
 
 function Section(props) {
   return (
@@ -131,10 +130,10 @@ export default function Options() {
         download(refs.output.innerHTML, type);
         break;
       case "jpeg":
-        domtoimage.toJpeg(refs.output).then((data) => download(data, type));
+        toJpeg(refs.output).then((data) => download(data, type));
         break;
       default:
-        domtoimage.toPng(refs.output).then((data) => download(data, type));
+        toPng(refs.output).then((data) => download(data, type));
         break;
     }
   }

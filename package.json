@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "chroma-js": "^2.4.2",
-    "dom-to-image": "^2.6.0",
+    "html-to-image": "^1.11.11",
     "rgbquant": "^1.1.2",
     "solid-js": "^1.6.10"
   }
