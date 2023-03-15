@@ -136,7 +136,7 @@ export default function Ascii() {
       const avg = Math.floor((r + g + b) / 3);
       const len = density.length;
       const charIndex = Math.floor(map(avg, 0, 256, 0, len));
-      const c = density.charAt(charIndex);
+      const c = a === 0 && state.usePadding ? " " : density.charAt(charIndex);
       const x = (i / 4) % state.width;
       const y = Math.floor(i / 4 / state.width);
 
