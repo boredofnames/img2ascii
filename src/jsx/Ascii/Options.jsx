@@ -303,7 +303,7 @@ export default function Options() {
           </Section>
           <Section title="Chroma Key">
             <Option title="Color">
-              <input type="color" onInput={onChroma} />
+              <input type="color" value={state.chromaKey} onInput={onChroma} />
             </Option>
             <Option title="Range">
               <input
