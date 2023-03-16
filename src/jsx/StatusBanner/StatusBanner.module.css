@@ -1,0 +1,7 @@
+.statusBanner {
+  position: absolute;
+  color: white;
+  padding: 5px;
+  width: 100%;
+  font-weight: bold;
+}

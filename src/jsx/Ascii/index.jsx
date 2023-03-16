@@ -1,11 +1,12 @@
 import { rgb } from "chroma-js";
 import { createEffect, createSignal, For, on, onMount, Show } from "solid-js";
 import { Portal } from "solid-js/web";
-import { getDistance, map, nearest } from "../../js/lib/utils";
+import { getDistance, map, nearest } from "@/js/lib/utils";
 import { useAscii, refs, palettes } from "./context";
 import Options from "./Options";
 import styles from "./Ascii.module.css";
 import RgbQuant from "rgbquant";
+import StatusBanner from "../StatusBanner";
 
 export default function Ascii() {
   const [state, { setState, setSize }] = useAscii();
@@ -253,6 +254,7 @@ export default function Ascii() {
       </Show>
 
       <div class={styles.container}>
+        <StatusBanner />
         <Show when={state.image !== undefined}>
           <div
             class={styles.preview}

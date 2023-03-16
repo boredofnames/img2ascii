@@ -1,9 +1,11 @@
 import { useAscii, refs, charSets, palettes, termCodes } from "./context";
-import { orderDensity } from "../../js/lib/surface-area";
+import { orderDensity } from "@/js/lib/surface-area";
 import chroma from "chroma-js";
 import { For, Show } from "solid-js";
 import styles from "./Ascii.module.css";
 import { toPng, toJpeg } from "html-to-image";
+import { STATUS_CODES } from "../StatusBanner";
+import { readImagePromise } from "@/js/lib/readImage";
 
 function Section(props) {
   return (
@@ -118,12 +120,23 @@ export default function Options() {
     setState("bgColor", e.currentTarget.value);
   }
 
+  function getTitle() {
+    let date = new Date();
+    return `ascii-art-${date
+      .toLocaleDateString()
+      .replace(
+        /\//g,
+        ""
+      )}-${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+  }
+
   function download(data, type) {
-    let name = window.prompt("Name?", "ascii"),
+    let name = window.prompt("Name?", getTitle()),
       isBlob = ["txt", "html"].includes(type),
       url;
+
+    if (!name) return;
     if (isBlob) {
-      //let json = JSON.stringify(data, null, 2),
       let blob = new Blob([data], {
         type: type === "html" ? "octet/stream" : "text/plain;charset=utf-8",
       });
@@ -141,67 +154,98 @@ export default function Options() {
     return `<div style="white-space: pre; font-family: monospace; line-height: 1; height: fit-content;">${html}</div>`;
   }
 
+  function onError(readable, err) {
+    console.error(err);
+    setState("status", {
+      code: STATUS_CODES.ERROR,
+      msg: readable,
+      time: 5000,
+    });
+  }
+
   function onSave(type) {
-    switch (type) {
-      case "txt":
-        download(refs.output.innerText, type);
-        break;
-      case "html":
-        download(wrapHTML(refs.output.innerHTML), type);
-        break;
-      case "jpeg":
-        toJpeg(refs.output)
-          .then((data) => download(data, type))
-          .catch((err) => console.error(err));
-        break;
-      default:
-        toPng(refs.output)
-          .then((data) => download(data, type))
-          .catch((err) => console.error(err));
-        break;
-    }
+    if (["jpeg", "png"].includes(type))
+      setState("status", {
+        code: STATUS_CODES.MESSAGE,
+        msg: "Generating image from dom!",
+        time: 1000,
+      });
+    setTimeout(() => {
+      switch (type) {
+        case "txt":
+          download(refs.output.innerText, type);
+          break;
+        case "html":
+          download(wrapHTML(refs.output.innerHTML), type);
+          break;
+        case "jpeg":
+          toJpeg(refs.output)
+            .then((data) => download(data, type))
+            .catch((err) =>
+              onError(
+                "Failed to get image from dom! Try Chromium for large images.",
+                err
+              )
+            );
+          break;
+        default:
+          toPng(refs.output)
+            .then((data) => download(data, type))
+            .catch((err) =>
+              onError(
+                "Failed to get image from dom! Try Chromium for large images.",
+                err
+              )
+            );
+          break;
+      }
+    }, 10);
   }
 
   function onCopy() {
     navigator.clipboard.writeText(refs.output.innerText);
-  }
-
-  async function readFile() {
-    return new Promise((resolve, reject) => {
-      let file = refs.uploader.files[0],
-        reader = new FileReader();
-      // it's onload event and you forgot (parameters)
-      reader.onload = function (e) {
-        const image = new Image();
-        image.src = e.target.result;
-        image.onload = () => {
-          setState({
-            image: e.target.result,
-            imageWidth: image.width,
-            imageHeight: image.height,
-          });
-          resolve(1);
-        };
-        refs.uploader.files = new DataTransfer().files;
-        refs.uploader.value = "";
-      };
-      reader.onerror = () => reject(new Error("Failed to load image!"));
-      reader.readAsDataURL(file);
+    setState("status", {
+      code: STATUS_CODES.SUCCESS,
+      msg: "Copied to clipboard!",
+      time: 2000,
     });
   }
 
-  async function generate() {
-    let success = await readFile();
-    console.log("success = " + success);
-    setState("scale", 15.6);
-    setSize();
+  function loadImage() {
+    setState("status", {
+      code: STATUS_CODES.MESSAGE,
+      msg: "Loading...",
+      time: 5000,
+    });
+    readImagePromise(refs.uploader.files[0])
+      .then((result) => {
+        let success = {
+          code: STATUS_CODES.SUCCESS,
+          msg: "Loaded Image",
+          time: 1000,
+        };
+        setState({
+          status: success,
+          image: result.data,
+          imageWidth: result.width,
+          imageHeight: result.height,
+          scale: 15.6,
+        });
+        setSize();
+      })
+      .catch((err) => {
+        onError("Failed to load image! ", err);
+      });
+
+    refs.uploader.files = new DataTransfer().files;
+    refs.uploader.value = "";
   }
   return (
     <div class={styles.Options}>
       <h2>Options</h2>
       <Section title="Upload">
         <Option>
-          <input ref={refs.uploader} type="file" onChange={generate} />
+          <input ref={refs.uploader} type="file" onChange={loadImage} />
           {/* or
         <input ref={url} placeholder="Image URL" /> */}
         </Option>
