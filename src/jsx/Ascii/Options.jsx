@@ -282,19 +282,6 @@ export default function Options() {
               onChange={onUseTermCodes}
             />
           </Option>
-          <Section
-            title="BG Color"
-            option={
-              <input checked={state.useBG} type="checkbox" onChange={onUseBG} />
-            }
-          >
-            <Show when={state.useBG}>
-              <Option title="BG">
-                <input type="color" value={state.bgColor} onInput={onBG} />
-              </Option>
-            </Show>
-          </Section>
-
           <Show when={state.useTermCodes}>
             <Option>
               <select onChange={onTermCodes} value={state.termCodes}>
@@ -304,42 +291,55 @@ export default function Options() {
               </select>
             </Option>
           </Show>
-          <Section
-            title="Quantization"
-            option={
-              <input
-                checked={state.useQuant}
-                type="checkbox"
-                onChange={onUseQuant}
-              />
-            }
-          >
-            <Show when={state.useQuant}>
-              <Option title="Use Dither">
-                <input
-                  checked={state.useDither}
-                  type="checkbox"
-                  onChange={onUseDither}
-                />
-              </Option>
-              <Option title="Depth">
-                <select value={state.colorDepth} onChange={onColorDepth}>
-                  {/* <option value={undefined}>off</option> */}
-                  <For each={colorDepths}>
-                    {(depth) => <option value={depth}>{depth}</option>}
-                  </For>
-                </select>
-              </Option>
-              <Option title="Palette">
-                <select value={state.palette} onChange={onPalette}>
-                  <option value={undefined}>none</option>
-                  <For each={Object.keys(palettes)}>
-                    {(palette) => <option value={palette}>{palette}</option>}
-                  </For>
-                </select>
-              </Option>
-            </Show>
-          </Section>
+        </Show>
+      </Section>
+      <Section
+        title="BG Color"
+        option={
+          <input checked={state.useBG} type="checkbox" onChange={onUseBG} />
+        }
+      >
+        <Show when={state.useBG}>
+          <Option title="BG">
+            <input type="color" value={state.bgColor} onInput={onBG} />
+          </Option>
+        </Show>
+      </Section>
+
+      <Section
+        title="Quantization"
+        option={
+          <input
+            checked={state.useQuant}
+            type="checkbox"
+            onChange={onUseQuant}
+          />
+        }
+      >
+        <Show when={state.useQuant}>
+          <Option title="Use Dither">
+            <input
+              checked={state.useDither}
+              type="checkbox"
+              onChange={onUseDither}
+            />
+          </Option>
+          <Option title="Depth">
+            <select value={state.colorDepth} onChange={onColorDepth}>
+              {/* <option value={undefined}>off</option> */}
+              <For each={colorDepths}>
+                {(depth) => <option value={depth}>{depth}</option>}
+              </For>
+            </select>
+          </Option>
+          <Option title="Palette">
+            <select value={state.palette} onChange={onPalette}>
+              <option value={undefined}>none</option>
+              <For each={Object.keys(palettes)}>
+                {(palette) => <option value={palette}>{palette}</option>}
+              </For>
+            </select>
+          </Option>
         </Show>
       </Section>
       <Section title="Chroma Key">
