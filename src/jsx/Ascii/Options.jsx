@@ -137,13 +137,17 @@ export default function Options() {
     isBlob && window.URL.revokeObjectURL(url);
   }
 
+  function wrapHTML(html) {
+    return `<div style="white-space: pre; font-family: monospace; line-height: 1; height: fit-content;">${html}</div>`;
+  }
+
   function onSave(type) {
     switch (type) {
       case "txt":
         download(refs.output.innerText, type);
         break;
       case "html":
-        download(refs.output.innerHTML, type);
+        download(wrapHTML(refs.output.innerHTML), type);
         break;
       case "jpeg":
         toJpeg(refs.output)
