@@ -140,10 +140,14 @@ export default function Options() {
         download(refs.output.innerHTML, type);
         break;
       case "jpeg":
-        toJpeg(refs.output).then((data) => download(data, type));
+        toJpeg(refs.output)
+          .then((data) => download(data, type))
+          .catch((err) => console.error(err));
         break;
       default:
-        toPng(refs.output).then((data) => download(data, type));
+        toPng(refs.output)
+          .then((data) => download(data, type))
+          .catch((err) => console.error(err));
         break;
     }
   }
@@ -343,19 +347,19 @@ export default function Options() {
         </Show>
       </Section>
       <Section title="Chroma Key">
-        <Option title="Color">
-          <input type="color" value={state.chromaKey} onInput={onChroma} />
-        </Option>
-        <Option title="Range">
-          <input
-            type="range"
-            min="1"
-            max="40"
-            value={state.chromaRange}
-            onInput={(e) => setState("chromaRange", +e.target.value)}
-          />{" "}
-          {state.chromaRange}
-        </Option>
+          <Option title="Color">
+            <input type="color" value={state.chromaKey} onInput={onChroma} />
+          </Option>
+          <Option title="Range">
+            <input
+              type="range"
+              min="1"
+              max="40"
+              value={state.chromaRange}
+              onInput={(e) => setState("chromaRange", +e.target.value)}
+            />{" "}
+            {state.chromaRange}
+          </Option>
       </Section>
       <Section title="Save">
         <Option>
