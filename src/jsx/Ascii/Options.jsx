@@ -63,6 +63,12 @@ export default function Options() {
     });
   }
 
+  function onUseBG(e) {
+    setState({
+      useBG: e.currentTarget.checked,
+    });
+  }
+
   function onColorDepth(e) {
     let value = e.currentTarget.value;
     setState("colorDepth", +value);
@@ -100,6 +106,10 @@ export default function Options() {
       chromaKey: e.currentTarget.value,
       chromaKeyHue: hue === 0 ? 360 : hue,
     });
+  }
+
+  function onBG(e) {
+    setState("bgColor", e.currentTarget.value);
   }
 
   function download(data, type) {
@@ -272,6 +282,19 @@ export default function Options() {
               onChange={onUseTermCodes}
             />
           </Option>
+          <Section
+            title="BG Color"
+            option={
+              <input checked={state.useBG} type="checkbox" onChange={onUseBG} />
+            }
+          >
+            <Show when={state.useBG}>
+              <Option title="BG">
+                <input type="color" value={state.bgColor} onInput={onBG} />
+              </Option>
+            </Show>
+          </Section>
+
           <Show when={state.useTermCodes}>
             <Option>
               <select onChange={onTermCodes} value={state.termCodes}>

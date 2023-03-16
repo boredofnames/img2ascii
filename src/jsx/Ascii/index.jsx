@@ -272,7 +272,13 @@ export default function Ascii() {
             </Show>
           </div>
         </Show>
-        <div ref={refs.output} class={styles.output} />
+        <div
+          ref={refs.output}
+          class={styles.output}
+          style={`background-color: ${
+            state.useBG ? state.bgColor : "transparent"
+          }`}
+        />
       </div>
     </div>
   );
