@@ -140,6 +140,7 @@ export default function Ascii() {
       const b = data[i + 2];
 
       const a =
+        state.useChroma &&
         state.chromaKeyHue &&
         getDistance(
           state.colorDepth
@@ -208,6 +209,7 @@ export default function Ascii() {
         state.quant;
         state.useQuant;
         state.useDither;
+        state.useChroma;
         state.palette;
         state.usePadding;
         state.padding;

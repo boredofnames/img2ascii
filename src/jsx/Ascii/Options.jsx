@@ -69,6 +69,12 @@ export default function Options() {
     });
   }
 
+  function onUseChroma(e) {
+    setState({
+      useChroma: e.currentTarget.checked,
+    });
+  }
+
   function onColorDepth(e) {
     let value = e.currentTarget.value;
     setState("colorDepth", +value);
@@ -346,7 +352,17 @@ export default function Options() {
           </Option>
         </Show>
       </Section>
-      <Section title="Chroma Key">
+      <Section
+        title="Chroma Key"
+        option={
+          <input
+            checked={state.useChroma}
+            type="checkbox"
+            onChange={onUseChroma}
+          />
+        }
+      >
+        <Show when={state.useChroma}>
           <Option title="Color">
             <input type="color" value={state.chromaKey} onInput={onChroma} />
           </Option>
@@ -360,6 +376,7 @@ export default function Options() {
             />{" "}
             {state.chromaRange}
           </Option>
+        </Show>
       </Section>
       <Section title="Save">
         <Option>
