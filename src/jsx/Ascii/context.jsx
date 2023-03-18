@@ -1,3 +1,4 @@
+import img2ascii from "@/js/lib/img2ascii";
 import { createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
@@ -174,6 +175,9 @@ export const AsciiContext = createContext([
     chromaRange: 10,
     useQuant: false,
     useDither: false,
+    i2a: new img2ascii({
+      palettes,
+    }),
   },
   {},
 ]);
@@ -198,16 +202,25 @@ export function AsciiProvider(props) {
     chromaRange: props.chromaRange || 10,
     useQuant: props.useQuant || false,
     useDither: props.useDither || false,
+    i2a:
+      props.i2a ||
+      new img2ascii({
+        palettes,
+      }),
   });
   const ascii = [
     state,
     {
-      setState,
+      setState(data, m) {
+        if (typeof data === "string") data = { [data]: m };
+        state.i2a.updateData(data);
+        setState(data);
+      },
       setSize() {
-        setState({
-          width: Math.floor((state.imageWidth / state.scale) * 1.6),
-          height: Math.floor(state.imageHeight / state.scale),
-        });
+        let width = Math.floor((state.imageWidth / state.scale) * 1.6),
+          height = Math.floor(state.imageHeight / state.scale);
+        state.i2a.updateData({ width, height });
+        setState({ width, height });
       },
     },
   ];

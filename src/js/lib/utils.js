@@ -28,3 +28,9 @@ export function map(n, start1, stop1, start2, stop2, withinBounds) {
     return constrain(newval, stop2, start2);
   }
 }
+
+export function filterObject(obj, callback) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key, val]) => callback(key, val))
+  );
+}

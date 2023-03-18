@@ -328,11 +328,12 @@ export default function Options() {
               type="checkbox"
               onChange={onShowColors}
             />
-            <Show when={state.showColors}>
-              <br />
-              <pre>{JSON.stringify(state.colors, null, 2)}</pre>
-            </Show>
           </Option>
+          <Show when={state.showColors}>
+            <Option>
+              <pre>{JSON.stringify(state.colors, null, 2)}</pre>
+            </Option>
+          </Show>
           <Option title="Embed Term Codes">
             <input
               checked={state.useTermCodes}
