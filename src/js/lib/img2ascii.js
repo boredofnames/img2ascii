@@ -26,7 +26,7 @@ const defaultProps = {
   colors: [],
   colorDepth: 8,
   colorCount: 0,
-  palettes: undefined,
+  palettes: [],
   palette: undefined,
   termCodes: "ansi",
   chromaRange: 10,
@@ -49,18 +49,29 @@ function knownProp(prop) {
 }
 
 export default function img2ascii(props) {
-  Object.assign(this, defaultProps, filterObject(props, knownProp));
+  if (props.useStore) {
+    this.useStore = true;
+    this.state = props.useStore.state;
+    this.setState = props.useStore.setState;
+  } else Object.assign(this, defaultProps, filterObject(props, knownProp));
 }
 
 img2ascii.prototype.updateData = function (data) {
-  Object.assign(this, filterObject(data, knownProp));
+  if (this.useStore) this.setState(data);
+  else Object.assign(this, filterObject(data, knownProp));
+};
+
+img2ascii.prototype.getData = function (key) {
+  return this.useStore ? this.state[key] : this[key];
 };
 
 img2ascii.prototype.quantize = function (canvas) {
-  let ctx = canvas.getContext("2d");
-  let opts = {
-      colors: Math.pow(2, this.colorDepth || 3),
-      palette: this.palettes[this.palette],
+  let ctx = canvas.getContext("2d"),
+    colorDepth = this.getData("colorDepth"),
+    palette = this.getData("palette"),
+    opts = {
+      colors: Math.pow(2, colorDepth || 3),
+      palette: this.getData("palettes")[palette],
       reIndex: true,
       useCache: false,
     },
@@ -70,13 +81,13 @@ img2ascii.prototype.quantize = function (canvas) {
     },
     noPalette = {
       method: 1,
-      initColors: this.colorDepth === 18 ? 262144 : 4096,
+      initColors: colorDepth === 18 ? 262144 : 4096,
       minHueCols: 0,
       reIndex: false,
       useCache: true,
     };
-  if (this.useDither) Object.assign(opts, dither);
-  if (!this.palette) Object.assign(opts, noPalette);
+  if (this.getData("useDither")) Object.assign(opts, dither);
+  if (!palette) Object.assign(opts, noPalette);
 
   let q = new RgbQuant(opts.removeEmpties());
   console.time("quant");
@@ -84,7 +95,10 @@ img2ascii.prototype.quantize = function (canvas) {
   let pal = q.palette();
   let reduced = q.reduce(canvas);
   console.timeEnd("quant");
-  let imgData = ctx.createImageData(this.width, this.height);
+  let imgData = ctx.createImageData(
+    this.getData("width"),
+    this.getData("height")
+  );
   imgData.data.set(reduced);
   ctx.putImageData(imgData, 0, 0);
   this.updateData({ quant: canvas.toDataURL() });
@@ -95,16 +109,18 @@ img2ascii.prototype.getPixelData = function (image) {
   let canvas = document.createElement("canvas"),
     ctx = canvas.getContext("2d"),
     data,
-    length;
-  canvas.width = this.width;
-  canvas.height = this.height;
+    length,
+    width = this.getData("width"),
+    height = this.getData("height");
+  canvas.width = width;
+  canvas.height = height;
 
-  ctx.drawImage(image, 0, 0, this.width, this.height);
+  ctx.drawImage(image, 0, 0, width, height);
 
-  if (this.useQuant) {
+  if (this.getData("useQuant")) {
     [data, length] = this.quantize(canvas);
   } else {
-    const frame = ctx.getImageData(0, 0, this.width, this.height);
+    const frame = ctx.getImageData(0, 0, width, height);
     data = frame.data;
     length = data.length;
   }
@@ -122,32 +138,35 @@ img2ascii.prototype.getColorString = function (color) {
 };
 
 img2ascii.prototype.getColorCode = function (color) {
-  if (this.termCodes === "fastfetch") {
-    let index = this.colors.indexOf(this.getColorString(color)) + 1;
-    if (index === this.lastColorCode) return "";
-    this.lastColorCode = index;
+  let termCodes = this.getData("termCodes"),
+    lastColorCode = this.getData("lastColorCode");
+  if (termCodes === "fastfetch") {
+    let index = this.getData("colors").indexOf(this.getColorString(color)) + 1;
+    if (index === lastColorCode) return "";
+    this.updateData({ lastColorCode: index });
     return "$" + index;
-  } else if (this.termCodes === "ansi") {
+  } else if (termCodes === "ansi") {
     let [r, g, b] = color;
     let code = `\\033[38;2;${r};${g};${b}m`;
-    if (code === this.lastColorCode) return "";
-    this.lastColorCode = code;
+    if (code === lastColorCode) return "";
+    this.updateData({ lastColorCode: index });
     return code;
   }
 };
 
 img2ascii.prototype.getColoredOutput = function (color, char) {
   let prefix = "",
-    colorString = this.getColorString(color);
-  if (this.lastColor !== colorString) {
+    colorString = this.getColorString(color),
+    lastColor = this.getData("lastColor");
+  if (lastColor !== colorString) {
     prefix = `${
-      this.lastColor === undefined ? "" : "</span>"
+      lastColor === undefined ? "" : "</span>"
     }<span style="color: ${colorString}">`;
-    this.lastColor = colorString;
+    this.updateData({ lastColor: colorString });
   }
   let output =
-    this.useTermCodes === true
-      ? this.termCodes === "fastfetch"
+    this.getData("useTermCodes") === true
+      ? this.getData("termCodes") === "fastfetch"
         ? char === "$"
           ? this.getColorCode(color) + "$$"
           : this.getColorCode(color) + char
@@ -158,13 +177,15 @@ img2ascii.prototype.getColoredOutput = function (color, char) {
 
 img2ascii.prototype.getAsciiText = function (buffer) {
   let text = "";
-  this.lastColor = this.lastColorCode = undefined;
+  this.updateData({ lastColor: undefined, lastColorCode: undefined });
   for (let y = 0, len = buffer.length; y < len; y++) {
     for (let x = 0, len = buffer[y].length; x < len; x++) {
       let char = buffer[y][x][0],
         color = buffer[y][x][1];
 
-      text += this.useColors ? this.getColoredOutput(color, char) : char;
+      text += this.getData("useColors")
+        ? this.getColoredOutput(color, char)
+        : char;
     }
     text += "\n";
   }
@@ -172,39 +193,44 @@ img2ascii.prototype.getAsciiText = function (buffer) {
 };
 
 img2ascii.prototype.process = function (data, length) {
-  let buffer = [];
-  let colorSet = new Set();
+  let buffer = [],
+    colorSet = new Set(),
+    colorDepth = this.getData("colorDepth"),
+    chromaKeyHue = this.getData("chromaKeyHue"),
+    usePadding = this.getData("usePadding"),
+    density = this.getData("density"),
+    width = this.getData("width");
   for (let i = 0; i < length; i += 4) {
     const r = data[i + 0];
     const g = data[i + 1];
     const b = data[i + 2];
 
     const a =
-      this.useChroma &&
-      this.chromaKeyHue &&
+      this.getData("useChroma") &&
+      chromaKeyHue &&
       getDistance(
-        this.colorDepth
+        colorDepth
           ? rgb(
-              nearest(r, this.colorDepth),
-              nearest(g, this.colorDepth),
-              nearest(b, this.colorDepth)
+              nearest(r, colorDepth),
+              nearest(g, colorDepth),
+              nearest(b, colorDepth)
             ).get("hsl.h")
           : rgb(r, g, b).get("hsl.h"),
-        this.chromaKeyHue
-      ) <= this.chromaRange
+        chromaKeyHue
+      ) <= this.getData("chromaRange")
         ? 0
         : 255;
 
-    const density = this.usePadding
-      ? this.density.padStart(this.density.length + this.padding, " ")
-      : this.density;
+    const paddedDensity = usePadding
+      ? density.padStart(density.length + this.getData("padding"), " ")
+      : density;
 
     const avg = Math.floor((r + g + b) / 3);
-    const len = density.length;
+    const len = paddedDensity.length;
     const charIndex = Math.floor(map(avg, 0, 256, 0, len));
-    const c = a === 0 && this.usePadding ? " " : density.charAt(charIndex);
-    const x = (i / 4) % this.width;
-    const y = Math.floor(i / 4 / this.width);
+    const c = a === 0 && usePadding ? " " : paddedDensity.charAt(charIndex);
+    const x = (i / 4) % width;
+    const y = Math.floor(i / 4 / width);
 
     const color = this.getColor(r, g, b, a);
     colorSet.add(this.getColorString(color));
@@ -212,6 +238,7 @@ img2ascii.prototype.process = function (data, length) {
     buffer[y] = buffer[y] || [];
     buffer[y][x] = [c, color];
   }
-  const colors = Array.from(colorSet);
-  return [buffer, colors];
+
+  this.updateData({ colors: Array.from(colorSet) });
+  return [buffer];
 };

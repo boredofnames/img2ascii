@@ -1,4 +1,3 @@
-import img2ascii from "@/js/lib/img2ascii";
 import { createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
@@ -170,14 +169,12 @@ export const AsciiContext = createContext([
     colorDepth: 8,
     bgColor: "rgb(0,0,0)",
     palette: undefined,
+    palettes: palettes,
     useTermCodes: false,
     termCodes: "ansi",
     chromaRange: 10,
     useQuant: false,
     useDither: false,
-    i2a: new img2ascii({
-      palettes,
-    }),
   },
   {},
 ]);
@@ -197,29 +194,26 @@ export function AsciiProvider(props) {
     colorDepth: props.colorDepth || 8,
     bgColor: props.bgColor || "rgb(0,0,0)",
     palette: props.palette || undefined,
+    palettes: props.palettes || palettes,
     useTermCodes: props.useTermCodes || false,
     termCodes: props.termCodes || "ansi",
     chromaRange: props.chromaRange || 10,
     useQuant: props.useQuant || false,
     useDither: props.useDither || false,
-    i2a:
-      props.i2a ||
-      new img2ascii({
-        palettes,
-      }),
   });
   const ascii = [
     state,
     {
-      setState(data, m) {
-        if (typeof data === "string") data = { [data]: m };
-        state.i2a.updateData(data);
-        setState(data);
-      },
+      // setState(data, m) {
+      //   if (typeof data === "string") data = { [data]: m };
+      //   state.i2a.updateData(data);
+      //   setState(data);
+      // },
+      setState,
       setSize() {
         let width = Math.floor((state.imageWidth / state.scale) * 1.6),
           height = Math.floor(state.imageHeight / state.scale);
-        state.i2a.updateData({ width, height });
+        //state.i2a.updateData({ width, height });
         setState({ width, height });
       },
     },

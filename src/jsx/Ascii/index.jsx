@@ -1,15 +1,16 @@
 import { createEffect, on, Show } from "solid-js";
-
 import { useAscii, refs } from "./context";
-
 import styles from "./Ascii.module.css";
-
 import StatusBanner from "../StatusBanner";
+import img2ascii from "@/js/lib/img2ascii";
 
 export default function Ascii() {
   const [state, { setState, setSize }] = useAscii();
 
   let buffer;
+
+  const i2a = new img2ascii({ useStore: { state, setState } });
+  console.log(i2a);
 
   createEffect(
     on(
@@ -50,11 +51,9 @@ export default function Ascii() {
       },
       () => {
         if (!state.image) return;
-        const [data, length] = state.i2a.getPixelData(refs.preview);
-        let colors;
-        [buffer, colors] = state.i2a.process(data, length);
-        setState("colors", colors);
-        refs.output.innerHTML = state.i2a.getAsciiText(buffer);
+        const [data, length] = i2a.getPixelData(refs.preview);
+        [buffer] = i2a.process(data, length);
+        refs.output.innerHTML = i2a.getAsciiText(buffer);
       },
       { defer: true }
     )
@@ -70,7 +69,7 @@ export default function Ascii() {
       },
       () => {
         if (!buffer) return;
-        refs.output.innerHTML = state.i2a.getAsciiText(buffer);
+        refs.output.innerHTML = i2a.getAsciiText(buffer);
       },
       { defer: true }
     )
@@ -94,7 +93,7 @@ export default function Ascii() {
             <Show when={state.quant}>
               <img
                 ref={refs.quant}
-                src={state.i2a.quant}
+                src={state.quant}
                 alt="quant"
                 style={{ display: state.useQuant ? "block" : "none" }}
               />
