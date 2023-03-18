@@ -149,7 +149,7 @@ img2ascii.prototype.getColorCode = function (color) {
     let [r, g, b] = color;
     let code = `\\033[38;2;${r};${g};${b}m`;
     if (code === lastColorCode) return "";
-    this.updateData({ lastColorCode: index });
+    this.updateData({ lastColorCode: code });
     return code;
   }
 };
