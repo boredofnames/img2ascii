@@ -1,17 +1,13 @@
-import { createEffect, createSignal, on, onMount, Show } from "solid-js";
-import { Portal } from "solid-js/web";
+import { createEffect, on, Show } from "solid-js";
 
 import { useAscii, refs } from "./context";
-import Options from "./Options";
+
 import styles from "./Ascii.module.css";
 
 import StatusBanner from "../StatusBanner";
 
 export default function Ascii() {
   const [state, { setState, setSize }] = useAscii();
-
-  const [portaled, setPortaled] = createSignal(false);
-  const [mounted, setMounted] = createSignal(false);
 
   let buffer;
 
@@ -80,20 +76,8 @@ export default function Ascii() {
     )
   );
 
-  onMount(() => {
-    if (portaled()) return;
-    setMounted(true);
-  });
-
   return (
     <div class={styles.Ascii}>
-      <Show when={mounted()}>
-        {setPortaled(true)}
-        <Portal mount={document.querySelector("#sidebar")}>
-          <Options />
-        </Portal>
-      </Show>
-
       <div class={styles.container}>
         <StatusBanner />
         <Show when={state.image !== undefined}>
