@@ -204,16 +204,10 @@ export function AsciiProvider(props) {
   const ascii = [
     state,
     {
-      // setState(data, m) {
-      //   if (typeof data === "string") data = { [data]: m };
-      //   state.i2a.updateData(data);
-      //   setState(data);
-      // },
       setState,
       setSize() {
         let width = Math.floor((state.imageWidth / state.scale) * 1.6),
           height = Math.floor(state.imageHeight / state.scale);
-        //state.i2a.updateData({ width, height });
         setState({ width, height });
       },
     },
