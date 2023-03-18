@@ -40,4 +40,5 @@ You can deploy the `dist` folder to any static host provider (netlify, surge, no
 - [CodingTrain](http//thecodingtrain.com/challenges/166-image-to-ascii) for the idea of using density based on light
 - [P5.js](https://p5js.org/) for the map and constrain functions
 - Trzcin for [Fira Code](https://github.com/Trzcin/Fira-Code-Nerd)
+- [titoBouzout](https://github.com/titoBouzout)
 - All the devs of mentioned libs
