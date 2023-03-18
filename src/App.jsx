@@ -7,8 +7,8 @@ import Sidebar from "./jsx/sidebar";
 function App() {
   return (
     <div class={styles.App}>
-      <Sidebar />
       <AsciiProvider>
+        <Sidebar />
         <Ascii />
       </AsciiProvider>
       <About />

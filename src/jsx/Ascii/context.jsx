@@ -169,6 +169,7 @@ export const AsciiContext = createContext([
     colorDepth: 8,
     bgColor: "rgb(0,0,0)",
     palette: undefined,
+    palettes: palettes,
     useTermCodes: false,
     termCodes: "ansi",
     chromaRange: 10,
@@ -193,6 +194,7 @@ export function AsciiProvider(props) {
     colorDepth: props.colorDepth || 8,
     bgColor: props.bgColor || "rgb(0,0,0)",
     palette: props.palette || undefined,
+    palettes: props.palettes || palettes,
     useTermCodes: props.useTermCodes || false,
     termCodes: props.termCodes || "ansi",
     chromaRange: props.chromaRange || 10,
@@ -204,10 +206,9 @@ export function AsciiProvider(props) {
     {
       setState,
       setSize() {
-        setState({
-          width: Math.floor((state.imageWidth / state.scale) * 1.6),
-          height: Math.floor(state.imageHeight / state.scale),
-        });
+        let width = Math.floor((state.imageWidth / state.scale) * 1.6),
+          height = Math.floor(state.imageHeight / state.scale);
+        setState({ width, height });
       },
     },
   ];
