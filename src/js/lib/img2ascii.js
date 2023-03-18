@@ -1,6 +1,12 @@
 import { rgb } from "chroma-js";
 import RgbQuant from "rgbquant";
-import { filterObject, getDistance, map, nearest } from "./utils";
+import {
+  filterObject,
+  getDistance,
+  map,
+  nearest,
+  removeEmpties,
+} from "./utils";
 
 export var charSets = [
   "░▒▓█",
@@ -88,8 +94,10 @@ img2ascii.prototype.quantize = function (canvas) {
     };
   if (this.getData("useDither")) Object.assign(opts, dither);
   if (!palette) Object.assign(opts, noPalette);
+  opts = removeEmpties(opts);
+  console.log(opts);
 
-  let q = new RgbQuant(opts.removeEmpties());
+  let q = new RgbQuant(opts);
   console.time("quant");
   q.sample(canvas);
   let pal = q.palette();

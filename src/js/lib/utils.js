@@ -34,3 +34,11 @@ export function filterObject(obj, callback) {
     Object.entries(obj).filter(([key, val]) => callback(key, val))
   );
 }
+
+export function removeEmpties(obj) {
+  return Object.keys(obj).reduce((acc, key) => {
+    const _acc = acc;
+    if (obj[key] !== undefined) _acc[key] = obj[key];
+    return _acc;
+  }, {});
+}
