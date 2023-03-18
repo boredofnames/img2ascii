@@ -10,7 +10,6 @@ export default function Ascii() {
   let buffer;
 
   const i2a = new img2ascii({ useStore: { state, setState } });
-  console.log(i2a);
 
   createEffect(
     on(
