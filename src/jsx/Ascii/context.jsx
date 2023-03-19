@@ -1,158 +1,10 @@
 import { createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
+import { palettes } from "../../js/lib/img2ascii/palettes";
+import { charSets } from "@/js/lib/img2ascii";
+import storage from "@/js/lib/storage";
 
-export const refs = {
-  output: undefined,
-  uploader: undefined,
-  url: undefined,
-  preview: undefined,
-  quant: undefined,
-  scale: undefined,
-  useColors: undefined,
-};
-
-export const charSets = [
-  "░▒▓█",
-  ".:░▒▓█",
-  ".-:*=+#%@",
-  ".:гтукзвоадыёб",
-  ".:ƒ₮¢£₰€₹¥₤₳$₴₭₱₦",
-  "custom",
-  "custom-from",
-];
-
-export const termCodes = ["ansi", "fastfetch"];
-
-export let palettes = {
-  "3-bit-term": [
-    [0, 0, 0],
-    [194, 54, 33],
-    [37, 188, 36],
-    [173, 173, 39],
-    [73, 46, 225],
-    [211, 56, 211],
-    [51, 187, 200],
-    [203, 204, 205],
-  ],
-  rgb3level: [
-    [0, 0, 0],
-    [128, 128, 128],
-    [255, 255, 255],
-    [128, 0, 0],
-    [255, 0, 0],
-    [255, 128, 128],
-    [255, 128, 0],
-    [128, 128, 0],
-    [128, 255, 0],
-    [255, 255, 0],
-    [255, 255, 128],
-    [0, 128, 0],
-    [0, 255, 0],
-    [128, 255, 128],
-    [0, 255, 128],
-    [0, 128, 128],
-    [0, 255, 255],
-    [128, 255, 255],
-    [0, 128, 255],
-    [0, 0, 128],
-    [0, 0, 255],
-    [128, 128, 255],
-    [128, 0, 128],
-    [128, 0, 255],
-    [255, 0, 255],
-    [255, 128, 255],
-    [255, 0, 128],
-  ],
-  rgb6bit: [
-    [0, 0, 0],
-    [104, 104, 104],
-    [183, 183, 183],
-    [255, 255, 255],
-    [104, 0, 0],
-    [183, 0, 0],
-    [255, 0, 0],
-    [183, 104, 104],
-    [255, 104, 104],
-    [255, 183, 183],
-    [183, 104, 0],
-    [255, 104, 0],
-    [255, 183, 0],
-    [255, 183, 104],
-    [104, 104, 0],
-    [104, 183, 0],
-    [183, 183, 0],
-    [183, 183, 104],
-    [183, 255, 104],
-    [183, 255, 0],
-    [255, 255, 0],
-    [255, 255, 104],
-    [255, 255, 183],
-    [0, 104, 0],
-    [0, 183, 0],
-    [104, 183, 104],
-    [0, 255, 0],
-    [104, 255, 104],
-    [104, 255, 0],
-    [183, 255, 183],
-    [0, 183, 104],
-    [0, 255, 104],
-    [104, 255, 183],
-    [0, 104, 104],
-    [0, 183, 183],
-    [104, 183, 183],
-    [0, 183, 255],
-    [0, 255, 183],
-    [0, 255, 255],
-    [104, 255, 255],
-    [183, 255, 255],
-    [0, 104, 183],
-    [0, 104, 255],
-    [104, 183, 255],
-    [0, 0, 104],
-    [0, 0, 183],
-    [0, 0, 255],
-    [104, 0, 255],
-    [104, 104, 183],
-    [104, 104, 255],
-    [183, 183, 255],
-    [104, 0, 104],
-    [104, 0, 183],
-    [183, 0, 183],
-    [183, 0, 255],
-    [183, 104, 183],
-    [255, 0, 255],
-    [183, 104, 255],
-    [255, 104, 255],
-    [255, 183, 255],
-    [183, 0, 104],
-    [255, 0, 104],
-    [255, 0, 183],
-    [255, 104, 183],
-  ],
-  gray4bit: [
-    [0, 0, 0],
-    [17, 17, 17],
-    [34, 34, 34],
-    [51, 51, 51],
-    [68, 68, 68],
-    [85, 85, 85],
-    [102, 102, 102],
-    [119, 119, 119],
-    [136, 136, 136],
-    [153, 153, 153],
-    [170, 170, 170],
-    [187, 187, 187],
-    [204, 204, 204],
-    [221, 221, 221],
-    [238, 238, 238],
-    [255, 255, 255],
-  ],
-  // rgb6bit32: [],
-};
-
-// palettes.rgb6bit.forEach(function (rgb) {
-//   palettes.rgb6bit32.push([...rgb, 255]);
-// });
+let loadedCharSets = [...charSets, ...(storage.get("customCharSets") || [])];
 
 export const AsciiContext = createContext([
   {
@@ -175,6 +27,7 @@ export const AsciiContext = createContext([
     chromaRange: 10,
     useQuant: false,
     useDither: false,
+    charSets: loadedCharSets,
   },
   {},
 ]);
@@ -200,6 +53,7 @@ export function AsciiProvider(props) {
     chromaRange: props.chromaRange || 10,
     useQuant: props.useQuant || false,
     useDither: props.useDither || false,
+    charSets: props.charSets || loadedCharSets,
   });
   const ascii = [
     state,
@@ -209,6 +63,12 @@ export function AsciiProvider(props) {
         let width = Math.floor((state.imageWidth / state.scale) * 1.6),
           height = Math.floor(state.imageHeight / state.scale);
         setState({ width, height });
+      },
+      updateCharSets() {
+        setState("charSets", [
+          ...charSets,
+          ...(storage.get("customCharSets") || []),
+        ]);
       },
     },
   ];

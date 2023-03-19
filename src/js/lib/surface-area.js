@@ -1,14 +1,14 @@
-export function getSurfaceArea(char, size = 10, font = "sans-serif") {
+export function getSurfaceArea(char, size = 12, font = "Fira Code") {
   const canvas = document.createElement("canvas"),
     ctx = canvas.getContext("2d", { willReadFrequently: true });
 
-  canvas.width = size;
-  canvas.height = size;
+  canvas.width = size + 4;
+  canvas.height = size + 4;
   //test styles
   //canvas.style.position = 'absolute'
   ctx.font = size + "px " + font;
   //test canvas
-  //$('body').appendChild(canvas)
+  //document.querySelector("body").appendChild(canvas);
   //clear
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -16,7 +16,7 @@ export function getSurfaceArea(char, size = 10, font = "sans-serif") {
   ctx.fillStyle = "black";
 
   let x = 0,
-    y = canvas.height;
+    y = canvas.height / 1.5;
 
   ctx.fillText(char, x, y);
   //analyze
@@ -30,43 +30,26 @@ export function getSurfaceArea(char, size = 10, font = "sans-serif") {
     else data.black += 1;
   }
   //log
+  //console.log(data);
   return data;
 }
 
-export function orderDensity(str) {
-  return (
-    [
-      ...new Set(
-        str
-          .replace(/^/, ".:")
-          .replace(/(?<!^)\s/g, "")
-          .split("")
-      ),
-    ]
-      .map((char) => getSurfaceArea(char))
-      .sort((a, b) => a.black - b.black)
-
-      // chars = chars
-      // 	.filter((char, i) => {
-      // 		if (chars[i - 1] && char.black === chars[i - 1]?.black)
-      // 			return false
-      // 		return true
-      // 	})
-      .map((char) => char.char)
-      .join("")
-  );
-  //console.log(chars)
-  //return chars
+export function orderDensity(str, reversed = false) {
+  return [...new Set(str.replace(/(?<!^)\s/g, "").split(""))]
+    .map((char) => getSurfaceArea(char))
+    .sort((a, b) => (reversed ? b.black - a.black : a.black - b.black))
+    .map((char) => char.char)
+    .join("");
 }
 
-//window.onload = () => {
-//	console.log(
-//		orderDensity(
-// 				'ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝﾞﾟ',
-// 				'.ノメソシヲヌチホヰネ',
-// 				 '.:-=+*#%@',
-// 				'абвгдеёжзийклмнопрстуфхцчшщъыьэюя',
-//				'₳฿¢₫€£₤₣ƒ₲₭Ł₦₱$₮₩¥₴¤₰₠₧원৳₹₨৲',
-//		 ),
-//	 )
-//}
+// window.onload = () => {
+//   console.log(
+//     orderDensity(
+//       //"ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝﾞﾟ"
+//       // ".ノメソシヲヌチホヰネ",
+//       ".:-=+*#%@"
+//       // "абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
+//       // "₳฿¢₫€£₤₣ƒ₲₭Ł₦₱$₮₩¥₴¤₰₠₧원৳₹₨৲"
+//     )
+//   );
+// };

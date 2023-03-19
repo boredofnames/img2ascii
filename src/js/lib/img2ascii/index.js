@@ -6,17 +6,17 @@ import {
   map,
   nearest,
   removeEmpties,
-} from "./utils";
+} from "../utils";
 
-export var charSets = [
+export let charSets = [
   "░▒▓█",
   ".:░▒▓█",
   ".-:*=+#%@",
   ".:гтукзвоадыёб",
   ".:ƒ₮¢£₰€₹¥₤₳$₴₭₱₦",
-  "custom",
-  "custom-from",
 ];
+
+export const termCodes = ["ansi", "fastfetch"];
 
 const defaultProps = {
   image: undefined,

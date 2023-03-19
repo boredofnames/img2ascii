@@ -1,5 +1,6 @@
 import { createEffect, on, Show } from "solid-js";
-import { useAscii, refs } from "./context";
+import { useAscii } from "./context";
+import { refs } from "./refs";
 import styles from "./Ascii.module.css";
 import StatusBanner from "../StatusBanner";
 import img2ascii from "@/js/lib/img2ascii";

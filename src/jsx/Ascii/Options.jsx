@@ -1,11 +1,15 @@
-import { useAscii, refs, charSets, palettes, termCodes } from "./context";
+import { useAscii } from "./context";
+import { termCodes } from "@/js/lib/img2ascii";
+import { refs } from "./refs";
 import { orderDensity } from "@/js/lib/surface-area";
 import chroma from "chroma-js";
-import { For, Show } from "solid-js";
+import { createMemo, For, Show } from "solid-js";
 import styles from "./Ascii.module.css";
 import { toPng, toJpeg } from "html-to-image";
 import { STATUS_CODES } from "../StatusBanner";
 import { readImagePromise } from "@/js/lib/readImage";
+import storage from "@/js/lib/storage";
+import { charSets } from "@/js/lib/img2ascii";
 
 function Section(props) {
   return (
@@ -28,9 +32,11 @@ function Option(props) {
 }
 
 export default function Options() {
-  const [state, { setState, setSize }] = useAscii();
+  const [state, { setState, setSize, updateCharSets }] = useAscii();
 
   let colorDepths = [2, 3, 4, 5, 6, 8, 9, 12, 18];
+
+  const paletteNames = createMemo(() => Object.keys(state.palettes));
 
   function onDensityChange(e) {
     let value = e.currentTarget.value;
@@ -103,16 +109,52 @@ export default function Options() {
     setState("showColors", e.currentTarget.checked);
   }
 
-  function sortCustom() {
-    setState("custom", orderDensity(state.custom));
-  }
-
   function onChroma(e) {
     let hue = chroma(e.currentTarget.value).get("hsl.h");
     if (isNaN(hue)) hue = false;
     setState({
       chromaKey: e.currentTarget.value,
       chromaKeyHue: hue === 0 ? 360 : hue,
+    });
+  }
+
+  function sortCharSet() {
+    setState("custom", orderDensity(state.custom));
+  }
+
+  function saveCharSet() {
+    let customCharSets = storage.get("customCharSets") || [],
+      updated = [...new Set([...customCharSets, refs.customCharSet.value])];
+    if (customCharSets.length === updated.length)
+      return setState("status", {
+        code: STATUS_CODES.ERROR,
+        msg: "Didn't save. Maybe it already exists? Wah wah..",
+        time: 2000,
+      });
+    storage.set("customCharSets", updated);
+    updateCharSets();
+    setState("status", {
+      code: STATUS_CODES.SUCCESS,
+      msg: "Saved Custom CharSet!",
+      time: 2000,
+    });
+  }
+
+  function deleteCharSet() {
+    let customCharSets = storage.get("customCharSets") || [],
+      updated = customCharSets.filter((set) => set !== state.density);
+    if (customCharSets.length === updated.length)
+      return setState("status", {
+        code: STATUS_CODES.ERROR,
+        msg: "Couldn't delete...? Wah wah..",
+        time: 2000,
+      });
+    storage.set("customCharSets", updated);
+    updateCharSets();
+    setState("status", {
+      code: STATUS_CODES.SUCCESS,
+      msg: "Deleted Custom CharSet!",
+      time: 2000,
     });
   }
 
@@ -168,7 +210,7 @@ export default function Options() {
       setState("status", {
         code: STATUS_CODES.MESSAGE,
         msg: "Generating image from dom!",
-        time: 1000,
+        time: 2000,
       });
     setTimeout(() => {
       switch (type) {
@@ -274,19 +316,28 @@ export default function Options() {
       <Section title="CharSet">
         <Option>
           <select onChange={onDensityChange} value={state.density}>
-            <For each={charSets}>
+            <For each={state.charSets}>
               {(set) => <option value={set}>{set}</option>}
             </For>
+            <option value="custom">custom</option>
+            <option value="custom-from">custom-from</option>
           </select>
+          <Show when={!charSets.includes(state.density)}>
+            <button onClick={deleteCharSet}>Delete</button>
+          </Show>
         </Option>
         <Show when={state.showCustom}>
           <Section title="Custom Chars">
             <Option>
               <input
+                ref={refs.customCharSet}
                 value={state.custom}
                 onChange={(e) => setState("custom", e.currentTarget.value)}
               />
-              <button onClick={sortCustom}>Order</button>
+            </Option>
+            <Option>
+              <button onClick={sortCharSet}>Order</button>
+              <button onClick={saveCharSet}>Save</button>
             </Option>
           </Section>
         </Show>
@@ -394,7 +445,7 @@ export default function Options() {
           <Option title="Palette">
             <select value={state.palette} onChange={onPalette}>
               <option value={undefined}>none</option>
-              <For each={Object.keys(palettes)}>
+              <For each={paletteNames()}>
                 {(palette) => <option value={palette}>{palette}</option>}
               </For>
             </select>
