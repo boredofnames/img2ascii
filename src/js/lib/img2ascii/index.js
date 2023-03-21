@@ -7,6 +7,7 @@ import {
   nearest,
   removeEmpties,
 } from "../utils";
+import { palettes } from "./palettes";
 
 export let charSets = [
   "░▒▓█",
@@ -24,15 +25,9 @@ const defaultProps = {
   height: 10,
   density: charSets[0],
   padding: 1,
-  scale: 15.6,
-  showPreviews: false,
-  showCustom: false,
-  custom: ".:oilk",
-  bgColor: "rgb(0,0,0)",
   colors: [],
   colorDepth: 8,
-  colorCount: 0,
-  palettes: [],
+  palettes: palettes,
   palette: undefined,
   termCodes: "ansi",
   chromaRange: 10,
