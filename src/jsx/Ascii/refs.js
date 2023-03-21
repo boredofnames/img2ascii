@@ -7,4 +7,6 @@ export const refs = {
   scale: undefined,
   useColors: undefined,
   customCharSet: undefined,
+  customPaletteName: undefined,
+  customPaletteColor: undefined,
 };

@@ -25,9 +25,9 @@ export default function Ascii() {
   createEffect(
     on(
       () => {
-        state.custom;
+        state.customCharSet;
       },
-      () => setState("density", state.custom),
+      () => setState("density", state.customCharSet),
       { defer: true }
     )
   );
@@ -48,6 +48,7 @@ export default function Ascii() {
         state.palette;
         state.usePadding;
         state.padding;
+        state.palettes.custom;
       },
       () => {
         if (!state.image) return;

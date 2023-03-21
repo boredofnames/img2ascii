@@ -10,6 +10,8 @@ import { STATUS_CODES } from "../StatusBanner";
 import { readImagePromise } from "@/js/lib/readImage";
 import storage from "@/js/lib/storage";
 import { charSets } from "@/js/lib/img2ascii";
+import { palettes } from "@/js/lib/img2ascii/palettes";
+import { filterObject } from "@/js/lib/utils";
 
 function Section(props) {
   return (
@@ -31,8 +33,23 @@ function Option(props) {
   );
 }
 
+function PaletteColor(props) {
+  return (
+    <div
+      onClick={() => props.removePaletteColor(props.color)}
+      style={{
+        "background-color": props.color,
+        width: "20px",
+        height: "10px",
+        border: "1px solid white",
+      }}
+    />
+  );
+}
+
 export default function Options() {
-  const [state, { setState, setSize, updateCharSets }] = useAscii();
+  const [state, { setState, setSize, updateCharSets, updatePalettes }] =
+    useAscii();
 
   let colorDepths = [2, 3, 4, 5, 6, 8, 9, 12, 18];
 
@@ -41,10 +58,10 @@ export default function Options() {
   function onDensityChange(e) {
     let value = e.currentTarget.value;
     if (value === "custom")
-      setState({ showCustom: true, density: state.custom });
+      setState({ showCustomCharSet: true, density: state.customCharSet });
     else if (value === "custom-from")
-      setState({ showCustom: true, custom: state.density });
-    else setState({ showCustom: false, density: value });
+      setState({ showCustomCharSet: true, custom: state.density });
+    else setState({ showCustomCharSet: false, density: value });
   }
 
   function onUseColors(e) {
@@ -90,7 +107,11 @@ export default function Options() {
 
   function onPalette(e) {
     let value = e.currentTarget.value;
-    setState("palette", value === "undefined" ? undefined : value);
+
+    setState({
+      showCustomPalette: value === "custom" ? true : false,
+      palette: value === "undefined" ? undefined : value,
+    });
   }
 
   function onUseTermCodes(e) {
@@ -119,7 +140,7 @@ export default function Options() {
   }
 
   function sortCharSet() {
-    setState("custom", orderDensity(state.custom));
+    setState("customCharSet", orderDensity(state.customCharSet));
   }
 
   function saveCharSet() {
@@ -154,6 +175,69 @@ export default function Options() {
     setState("status", {
       code: STATUS_CODES.SUCCESS,
       msg: "Deleted Custom CharSet!",
+      time: 2000,
+    });
+  }
+
+  function addPaletteColor() {
+    setState("palettes", (current) => ({
+      ...current,
+      custom: [...current.custom, chroma(refs.customPaletteColor.value).rgb()],
+    }));
+  }
+
+  function removePaletteColor(color) {
+    console.log(color);
+    setState("palettes", (current) => ({
+      ...current,
+      custom: current.custom.filter((rgb) => {
+        console.log(`rgb(${rgb.r},${rgb.g},${rgb.b})`);
+        return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})` !== color;
+      }),
+    }));
+  }
+
+  function savePalette() {
+    let customPalettes = storage.get("customPalettes") || {},
+      name = refs.customPaletteName.value,
+      updated = {
+        ...customPalettes,
+        ...{ [name]: state.palettes.custom },
+      };
+
+    if (customPalettes[name]) {
+      let accept = confirm(name + " already exists. Overwrite?");
+      if (!accept)
+        return setState("status", {
+          code: STATUS_CODES.ERROR,
+          msg: "Canceled save.",
+          time: 2000,
+        });
+    }
+
+    storage.set("customPalettes", updated);
+    updatePalettes();
+    setState("status", {
+      code: STATUS_CODES.SUCCESS,
+      msg: "Saved Custom Palette!",
+      time: 2000,
+    });
+  }
+
+  function deletePalette() {
+    let customPalettes = storage.get("customPalettes") || {},
+      updated = filterObject(customPalettes, (name) => name !== state.palette);
+    if (updated[state.palette])
+      return setState("status", {
+        code: STATUS_CODES.ERROR,
+        msg: "Couldn't delete...? Wah wah..",
+        time: 2000,
+      });
+    storage.set("customPalettes", updated);
+    updatePalettes();
+    setState("status", {
+      code: STATUS_CODES.SUCCESS,
+      msg: "Deleted Custom Palette!",
       time: 2000,
     });
   }
@@ -282,6 +366,7 @@ export default function Options() {
     refs.uploader.files = new DataTransfer().files;
     refs.uploader.value = "";
   }
+
   return (
     <div class={styles.Options}>
       <h2>Options</h2>
@@ -326,13 +411,15 @@ export default function Options() {
             <button onClick={deleteCharSet}>Delete</button>
           </Show>
         </Option>
-        <Show when={state.showCustom}>
+        <Show when={state.showCustomCharSet}>
           <Section title="Custom Chars">
             <Option>
               <input
                 ref={refs.customCharSet}
-                value={state.custom}
-                onChange={(e) => setState("custom", e.currentTarget.value)}
+                value={state.customCharSet}
+                onChange={(e) =>
+                  setState("customCharSet", e.currentTarget.value)
+                }
               />
             </Option>
             <Option>
@@ -449,9 +536,36 @@ export default function Options() {
                 {(palette) => <option value={palette}>{palette}</option>}
               </For>
             </select>
+            <Show when={!palettes[state.palette]}>
+              <button onClick={deletePalette}>Delete</button>
+            </Show>
           </Option>
         </Show>
       </Section>
+      <Show when={state.showCustomPalette}>
+        <Section title="Custom Palette">
+          <Option title="Name">
+            <input ref={refs.customPaletteName} value="palette" />
+          </Option>
+          <Option>
+            <For each={state.palettes.custom}>
+              {(color) => (
+                <PaletteColor
+                  color={`rgb(${color[0]},${color[1]},${color[2]})`}
+                  removePaletteColor={removePaletteColor}
+                />
+              )}
+            </For>
+          </Option>
+          <Option>
+            <input ref={refs.customPaletteColor} type="color" />
+            <button onClick={addPaletteColor}>Add</button>
+          </Option>
+          <Option>
+            <button onClick={savePalette}>Save</button>
+          </Option>
+        </Section>
+      </Show>
       <Section
         title="Chroma Key"
         option={
