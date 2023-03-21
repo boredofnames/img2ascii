@@ -12,11 +12,15 @@ import storage from "@/js/lib/storage";
 import { charSets } from "@/js/lib/img2ascii";
 import { palettes } from "@/js/lib/img2ascii/palettes";
 import { filterObject } from "@/js/lib/utils";
+import Icon from "../Common/Icon";
 
 function Section(props) {
   return (
     <div class={styles.Section}>
       <h3>
+        <Show when={props.icon}>
+          <Icon name={props.icon} size={24} />
+        </Show>
         {props.title} {props.option && props.option}
       </h3>
       {props.children}
@@ -370,7 +374,7 @@ export default function Options() {
   return (
     <div class={styles.Options}>
       <h2>Options</h2>
-      <Section title="Upload">
+      <Section title="Upload" icon="upload_file">
         <Option>
           <input ref={refs.uploader} type="file" onChange={loadImage} />
           {/* or
@@ -384,7 +388,7 @@ export default function Options() {
           />
         </Option>
       </Section>
-      <Section title="Scale">
+      <Section title="Scale" icon="resize">
         <Option>
           <input
             ref={refs.scale}
@@ -398,7 +402,7 @@ export default function Options() {
           {state.scale}
         </Option>
       </Section>
-      <Section title="CharSet">
+      <Section title="CharSet" icon="abc">
         <Option>
           <select onChange={onDensityChange} value={state.density}>
             <For each={state.charSets}>
@@ -408,11 +412,17 @@ export default function Options() {
             <option value="custom-from">custom-from</option>
           </select>
           <Show when={!charSets.includes(state.density)}>
-            <button onClick={deleteCharSet}>Delete</button>
+            <button
+              title="Delete"
+              class={styles.plainButton}
+              onClick={deleteCharSet}
+            >
+              <Icon name="delete" size={24} />
+            </button>
           </Show>
         </Option>
         <Show when={state.showCustomCharSet}>
-          <Section title="Custom Chars">
+          <Section title="Custom Chars" icon="tune">
             <Option>
               <input
                 ref={refs.customCharSet}
@@ -421,10 +431,20 @@ export default function Options() {
                   setState("customCharSet", e.currentTarget.value)
                 }
               />
-            </Option>
-            <Option>
-              <button onClick={sortCharSet}>Order</button>
-              <button onClick={saveCharSet}>Save</button>
+              <button
+                title="Sort Chars"
+                class={styles.plainButton}
+                onClick={sortCharSet}
+              >
+                <Icon name="sort" size={24} />
+              </button>
+              <button
+                title="Save"
+                class={styles.plainButton}
+                onClick={saveCharSet}
+              >
+                <Icon name="save" size={24} />
+              </button>
             </Option>
           </Section>
         </Show>
@@ -457,6 +477,7 @@ export default function Options() {
             onChange={onUseColors}
           />
         }
+        icon="format_paint"
       >
         <Show when={state.useColors}>
           <Option title="Color Count">{state.colors.length}</Option>
@@ -495,6 +516,7 @@ export default function Options() {
         option={
           <input checked={state.useBG} type="checkbox" onChange={onUseBG} />
         }
+        icon="format_color_fill"
       >
         <Show when={state.useBG}>
           <Option title="BG">
@@ -512,6 +534,7 @@ export default function Options() {
             onChange={onUseQuant}
           />
         }
+        icon="compress"
       >
         <Show when={state.useQuant}>
           <Option title="Use Dither">
@@ -537,15 +560,36 @@ export default function Options() {
               </For>
             </select>
             <Show when={!palettes[state.palette]}>
-              <button onClick={deletePalette}>Delete</button>
+              <button
+                title="Delete"
+                class={styles.plainButton}
+                onClick={deletePalette}
+              >
+                <Icon name="delete" size={24} />
+              </button>
             </Show>
           </Option>
         </Show>
       </Section>
       <Show when={state.showCustomPalette}>
-        <Section title="Custom Palette">
-          <Option title="Name">
-            <input ref={refs.customPaletteName} value="palette" />
+        <Section title="Custom Palette" icon="palette">
+          <Option>
+            <input ref={refs.customPaletteName} value="palette-name" />
+            <button
+              title="Save"
+              class={styles.plainButton}
+              onClick={savePalette}
+            >
+              <Icon name="save" size={24} />
+            </button>
+          </Option>
+
+          <Option>
+            <input
+              ref={refs.customPaletteColor}
+              type="color"
+              onChange={addPaletteColor}
+            />
           </Option>
           <Option>
             <For each={state.palettes.custom}>
@@ -556,13 +600,6 @@ export default function Options() {
                 />
               )}
             </For>
-          </Option>
-          <Option>
-            <input ref={refs.customPaletteColor} type="color" />
-            <button onClick={addPaletteColor}>Add</button>
-          </Option>
-          <Option>
-            <button onClick={savePalette}>Save</button>
           </Option>
         </Section>
       </Show>
@@ -575,6 +612,7 @@ export default function Options() {
             onChange={onUseChroma}
           />
         }
+        icon="format_color_reset"
       >
         <Show when={state.useChroma}>
           <Option title="Color">
@@ -592,7 +630,7 @@ export default function Options() {
           </Option>
         </Show>
       </Section>
-      <Section title="Save">
+      <Section title="Save" icon="save">
         <Option>
           <button onClick={() => onSave("txt")}>Text</button>
           <button onClick={() => onSave("html")}>HTML</button>
