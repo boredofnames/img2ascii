@@ -3,6 +3,7 @@ import { createStore, reconcile } from "solid-js/store";
 import { palettes } from "../../js/lib/img2ascii/palettes";
 import { charSets } from "@/js/lib/img2ascii";
 import storage from "@/js/lib/storage";
+import { STATUS_CODES } from "../StatusBanner";
 
 let loadedCharSets = [...charSets, ...(storage.get("customCharSets") || [])],
   loadedPalettes = {
@@ -93,6 +94,14 @@ export function AsciiProvider(props) {
         setState("palettes", reconcile(data));
         if (state.palette !== "custom" || !data[state.palette])
           setState("palette", undefined);
+      },
+      onError(readable, err) {
+        console.error(err);
+        setState("status", {
+          code: STATUS_CODES.ERROR,
+          msg: readable,
+          time: 5000,
+        });
       },
     },
   ];

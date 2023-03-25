@@ -6,7 +6,7 @@ import { STATUS_CODES } from "@/jsx/StatusBanner";
 import { refs } from "../refs";
 
 export default function Save() {
-  const [, { setState }] = useAscii();
+  const [, { setState, onError }] = useAscii();
 
   function getTitle() {
     let date = new Date();
@@ -40,15 +40,6 @@ export default function Save() {
 
   function wrapHTML(html) {
     return `<div style="white-space: pre; font-family: monospace; line-height: 1; height: fit-content;">${html}</div>`;
-  }
-
-  function onError(readable, err) {
-    console.error(err);
-    setState("status", {
-      code: STATUS_CODES.ERROR,
-      msg: readable,
-      time: 5000,
-    });
   }
 
   function onSave(type) {

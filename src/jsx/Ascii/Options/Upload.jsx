@@ -6,7 +6,7 @@ import { STATUS_CODES } from "@/jsx/StatusBanner";
 import { refs } from "../refs";
 
 export default function Upload() {
-  const [state, { setState, setSize }] = useAscii();
+  const [state, { setState, setSize, onError }] = useAscii();
 
   function loadImage() {
     setState("status", {
