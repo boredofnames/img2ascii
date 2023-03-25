@@ -57,7 +57,7 @@ export default function CharSet() {
     if (value === "custom")
       setState({ showCustomCharSet: true, density: state.customCharSet });
     else if (value === "custom-from")
-      setState({ showCustomCharSet: true, custom: state.density });
+      setState({ showCustomCharSet: true, customCharSet: state.density });
     else setState({ showCustomCharSet: false, density: value });
   }
   function onUsePadding(e) {
