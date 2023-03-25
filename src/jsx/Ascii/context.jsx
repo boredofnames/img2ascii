@@ -18,6 +18,7 @@ let loadedCharSets = [...charSets, ...(storage.get("customCharSets") || [])],
 
 export const AsciiContext = createContext([
   {
+    debug: false,
     image: undefined,
     density: charSets[0],
     usePadding: true,
@@ -45,6 +46,7 @@ export const AsciiContext = createContext([
 
 export function AsciiProvider(props) {
   const [state, setState] = createStore({
+    debug: props.debug || false,
     image: props.image || undefined,
     density: props.density || charSets[0],
     usePadding: props.usePadding || true,

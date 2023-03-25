@@ -21,21 +21,3 @@
   line-height: 1;
   height: fit-content;
 }
-
-.Section h3 {
-  display: flex;
-}
-
-.Option {
-  display: flex;
-  align-items: center;
-  padding-left: 6px;
-  padding-bottom: 4px;
-}
-
-.plainButton {
-  background-color: transparent;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
