@@ -1,6 +1,6 @@
 import { createContext, useContext } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
-import { palettes } from "../../js/lib/img2ascii/palettes";
+import { palettes } from "@/js/lib/img2ascii/palettes";
 import { charSets } from "@/js/lib/img2ascii";
 import storage from "@/js/lib/storage";
 import { STATUS_CODES } from "../StatusBanner";
