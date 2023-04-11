@@ -6,28 +6,26 @@ import StatusBanner from "../StatusBanner";
 import img2ascii from "@/js/lib/img2ascii";
 
 export default function Ascii() {
-  const [state, { setState, setSize }] = useAscii();
+  const [state, { setState, setSize }] = useAscii(),
+    i2a = new img2ascii({ useStore: { state, setState } });
 
-  let buffer;
+  function draw() {
+    if (!state.buffer) return console.warn("warn: No buffer found");
+    refs.output.innerHTML = i2a.getAsciiText(state.buffer);
+  }
+  function process() {
+    if (!state.image) return console.warn("warn: No image found");
+    const [data, length] = i2a.getPixelData(refs.preview);
+    setState("buffer", i2a.process(data, length));
+    draw();
+  }
 
-  const i2a = new img2ascii({ useStore: { state, setState } });
+  createEffect(on(() => state.scale, setSize, { defer: true }));
 
   createEffect(
     on(
-      () => {
-        state.scale;
-      },
-      () => setSize(),
-      { defer: true }
-    )
-  );
-
-  createEffect(
-    on(
-      () => {
-        state.customCharSet;
-      },
-      () => setState("density", state.customCharSet),
+      () => state.customCharSet,
+      (v) => setState("density", v),
       { defer: true }
     )
   );
@@ -50,12 +48,7 @@ export default function Ascii() {
         state.padding;
         state.palettes.custom;
       },
-      () => {
-        if (!state.image) return;
-        const [data, length] = i2a.getPixelData(refs.preview);
-        [buffer] = i2a.process(data, length);
-        refs.output.innerHTML = i2a.getAsciiText(buffer);
-      },
+      process,
       { defer: true }
     )
   );
@@ -68,10 +61,7 @@ export default function Ascii() {
         state.useTermCodes;
         state.termCodes;
       },
-      () => {
-        if (!buffer) return;
-        refs.output.innerHTML = i2a.getAsciiText(buffer);
-      },
+      draw,
       { defer: true }
     )
   );

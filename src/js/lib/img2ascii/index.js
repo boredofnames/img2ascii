@@ -243,5 +243,5 @@ img2ascii.prototype.process = function (data, length) {
   }
 
   this.updateData({ colors: Array.from(colorSet) });
-  return [buffer];
+  return buffer;
 };
