@@ -11,7 +11,8 @@ import styles from "./Options.module.css";
 import Icon from "@/jsx/Common/Icon";
 
 export default function CharSet() {
-  const [state, { setState, updateCharSets }] = useAscii();
+  const [state, { setState, updateCharSets, enableHeavyUse, disableHeavyUse }] =
+    useAscii();
 
   function sortCharSet() {
     setState("customCharSet", orderDensity(state.customCharSet));
@@ -64,6 +65,14 @@ export default function CharSet() {
     setState({
       usePadding: e.currentTarget.checked,
     });
+  }
+
+  function onPaddingInput(e) {
+    disableHeavyUse();
+    setState("padding", +e.target.value);
+  }
+  function onPaddingChange() {
+    enableHeavyUse();
   }
 
   return (
@@ -125,7 +134,9 @@ export default function CharSet() {
             min="1"
             max="100"
             value={state.padding}
-            onInput={(e) => setState("padding", +e.target.value)}
+            onInput={onPaddingInput}
+            onChange={onPaddingChange}
+            onMouseUp={onPaddingChange}
           />{" "}
           {state.padding}
         </Option>

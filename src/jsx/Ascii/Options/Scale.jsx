@@ -31,6 +31,7 @@ export default function Scale() {
           value={state.scale}
           onInput={onInput}
           onChange={onChange}
+          onMouseUp={onChange}
         />{" "}
         {state?.buffer?.[0]?.length || 0}x{state?.buffer?.length || 0}
       </Option>
