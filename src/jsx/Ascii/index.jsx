@@ -80,6 +80,7 @@ export default function Ascii() {
               ref={refs.preview}
               src={state.image}
               alt="image"
+              onLoad={process}
             />
             <Show when={state.quant}>
               <img
