@@ -4,7 +4,18 @@ import Option from "./Option";
 import { refs } from "../refs";
 
 export default function Scale() {
-  const [state, { setState }] = useAscii();
+  const [state, { setState, disableHeavyUse, enableHeavyUse }] = useAscii();
+  function onInput(e) {
+    let scale = +e.currentTarget.value;
+    disableHeavyUse();
+    setState("scale", (v) => (scale > 2 ? scale : v));
+  }
+
+  function onChange(e) {
+    let scale = +e.currentTarget.value;
+    setState({ scale });
+    enableHeavyUse();
+  }
 
   return (
     <Section title="Scale" icon="resize">
@@ -16,9 +27,10 @@ export default function Scale() {
           max={100}
           step={0.2}
           value={state.scale}
-          onChange={(e) => setState("scale", +e.currentTarget.value)}
+          onInput={onInput}
+          onChange={onChange}
         />{" "}
-        {state.scale}
+        {state?.buffer?.[0]?.length || 0}x{state?.buffer?.length || 0}
       </Option>
     </Section>
   );
