@@ -94,8 +94,7 @@ export default function Save() {
       <Option>
         <button onClick={() => onSave("txt")}>Text</button>
         <button onClick={() => onSave("html")}>HTML</button>
-      </Option>
-      <Option>
+
         <button onClick={() => onSave("jpeg")}>JPEG</button>
         <button onClick={() => onSave("png")}>PNG</button>
       </Option>

@@ -13,7 +13,6 @@ import Upload from "./Upload";
 export default function Options() {
   return (
     <div class={styles.Options}>
-      <h2>Options</h2>
       <Upload />
       <Scale />
       <CharSet />
