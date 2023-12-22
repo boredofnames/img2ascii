@@ -1,4 +1,4 @@
-import { createContext, useContext } from "solid-js";
+import { batch, createContext, useContext } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { palettes } from "@/js/lib/img2ascii/palettes";
 import { charSets } from "@/js/lib/img2ascii";
@@ -101,6 +101,18 @@ export function AsciiProvider(props) {
           code: STATUS_CODES.ERROR,
           msg: readable,
           time: 5000,
+        });
+      },
+      disableHeavyUse() {
+        batch(() => {
+          setState("useColors", (v) => (v === true ? 2 : v));
+          setState("useQuant", (v) => (v === true ? 2 : v));
+        });
+      },
+      enableHeavyUse() {
+        batch(() => {
+          setState("useColors", (v) => (v === 2 ? true : v));
+          setState("useQuant", (v) => (v === 2 ? true : v));
         });
       },
     },

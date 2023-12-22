@@ -1,4 +1,3 @@
-import { rgb } from "chroma-js";
 import RgbQuant from "rgbquant";
 import {
   filterObject,
@@ -8,6 +7,7 @@ import {
   removeEmpties,
 } from "../utils";
 import { palettes } from "./palettes";
+import Color from "colorjs.io/dist/color";
 
 export let charSets = [
   "░▒▓█",
@@ -120,7 +120,7 @@ img2ascii.prototype.getPixelData = function (image) {
 
   ctx.drawImage(image, 0, 0, width, height);
 
-  if (this.getData("useQuant")) {
+  if (this.getData("useQuant") === true) {
     [data, length] = this.quantize(canvas);
   } else {
     const frame = ctx.getImageData(0, 0, width, height);
@@ -186,20 +186,38 @@ img2ascii.prototype.getAsciiText = function (buffer) {
       let char = buffer[y][x][0],
         color = buffer[y][x][1];
 
-      text += this.getData("useColors")
-        ? this.getColoredOutput(color, char)
-        : char;
+      text +=
+        this.getData("useColors") === true
+          ? this.getColoredOutput(color, char)
+          : char;
     }
     text += "\n";
   }
   return text;
 };
 
+img2ascii.prototype.getAlpha = function (color) {
+  let colorDepth = this.getData("colorDepth"),
+    chromaKeyHue = this.getData("chromaKeyHue");
+  return this.getData("useChroma") &&
+    chromaKeyHue &&
+    getDistance(
+      colorDepth
+        ? new Color("srgb", [
+            nearest(color.r, colorDepth),
+            nearest(color.g, colorDepth),
+            nearest(color.b, colorDepth),
+          ]).hsl.h
+        : new Color("srgb", [color.r, color.g, color.b]).hsl.h,
+      chromaKeyHue
+    ) <= this.getData("chromaRange")
+    ? 0
+    : 255;
+};
+
 img2ascii.prototype.process = function (data, length) {
   let buffer = [],
     colorSet = new Set(),
-    colorDepth = this.getData("colorDepth"),
-    chromaKeyHue = this.getData("chromaKeyHue"),
     usePadding = this.getData("usePadding"),
     density = this.getData("density"),
     width = this.getData("width");
@@ -207,22 +225,7 @@ img2ascii.prototype.process = function (data, length) {
     const r = data[i + 0];
     const g = data[i + 1];
     const b = data[i + 2];
-
-    const a =
-      this.getData("useChroma") &&
-      chromaKeyHue &&
-      getDistance(
-        colorDepth
-          ? rgb(
-              nearest(r, colorDepth),
-              nearest(g, colorDepth),
-              nearest(b, colorDepth)
-            ).get("hsl.h")
-          : rgb(r, g, b).get("hsl.h"),
-        chromaKeyHue
-      ) <= this.getData("chromaRange")
-        ? 0
-        : 255;
+    const a = this.getAlpha({ r, g, b });
 
     const paddedDensity = usePadding
       ? density.padStart(density.length + this.getData("padding"), " ")

@@ -3,11 +3,11 @@ import { useAscii } from "../context";
 import Section from "./Section";
 import Option from "./Option";
 import Icon from "@/jsx/Common/Icon";
-import chroma from "chroma-js";
 import { refs } from "../refs";
 import { STATUS_CODES } from "@/jsx/StatusBanner";
 import storage from "@/js/lib/storage";
 import styles from "./Options.module.css";
+import Color from "colorjs.io/dist/color";
 
 function PaletteColor(props) {
   return (
@@ -27,9 +27,14 @@ export default function CustomPalette() {
   const [state, { setState, updatePalettes }] = useAscii();
 
   function addPaletteColor() {
+    let color = new Color(refs.customPaletteColor.value).to("srgb");
+
     setState("palettes", (current) => ({
       ...current,
-      custom: [...current.custom, chroma(refs.customPaletteColor.value).rgb()],
+      custom: [
+        ...current.custom,
+        [255 * color.r, 255 * color.g, 255 * color.b],
+      ],
     }));
   }
 
@@ -37,10 +42,9 @@ export default function CustomPalette() {
     console.log(color);
     setState("palettes", (current) => ({
       ...current,
-      custom: current.custom.filter((rgb) => {
-        console.log(`rgb(${rgb.r},${rgb.g},${rgb.b})`);
-        return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})` !== color;
-      }),
+      custom: current.custom.filter(
+        (rgb) => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})` !== color
+      ),
     }));
   }
 

@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 import { useAscii } from "../context";
 import Section from "./Section";
 import Option from "./Option";
-import chroma from "chroma-js";
+import Color from "colorjs.io/dist/color";
 
 export default function ChromaKey() {
   const [state, { setState }] = useAscii();
@@ -13,7 +13,7 @@ export default function ChromaKey() {
   }
 
   function onChroma(e) {
-    let hue = chroma(e.currentTarget.value).get("hsl.h");
+    let hue = new Color(e.currentTarget.value).hsl.h;
     if (isNaN(hue)) hue = false;
     setState({
       chromaKey: e.currentTarget.value,
