@@ -47,6 +47,7 @@ export default function ChromaKey() {
           {state.chromaRange}
         </Option>
       </Show>
+      <hr />
     </Section>
   );
 }

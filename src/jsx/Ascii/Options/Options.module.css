@@ -2,6 +2,11 @@
   display: flex;
 }
 
+.Section hr {
+  border-color: black;
+  border-radius: 50%;
+}
+
 .Option {
   display: flex;
   align-items: center;
@@ -14,4 +19,8 @@
   border: none;
   color: white;
   cursor: pointer;
+}
+
+#scaleRange {
+  direction: rtl;
 }

@@ -25,6 +25,7 @@ export default function BgColor() {
           <input type="color" value={state.bgColor} onInput={onBG} />
         </Option>
       </Show>
+      <hr />
     </Section>
   );
 }

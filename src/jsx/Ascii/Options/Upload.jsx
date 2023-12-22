@@ -54,6 +54,7 @@ export default function Upload() {
           onChange={onShowPreviews}
         />
       </Option>
+      <hr />
     </Section>
   );
 }

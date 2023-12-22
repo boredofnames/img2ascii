@@ -99,6 +99,7 @@ export default function Quantization() {
           </Show>
         </Option>
       </Show>
+      <hr />
     </Section>
   );
 }

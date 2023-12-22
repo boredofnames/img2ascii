@@ -101,6 +101,7 @@ export default function CustomPalette() {
             )}
           </For>
         </Option>
+        <hr />
       </Section>
     </Show>
   );

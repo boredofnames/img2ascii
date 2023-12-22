@@ -130,6 +130,7 @@ export default function CharSet() {
           {state.padding}
         </Option>
       </Show>
+      <hr />
     </Section>
   );
 }
